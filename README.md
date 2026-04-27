@@ -31,7 +31,7 @@ All dependencies are installed via the Arduino IDE Library Manager or `arduino-c
 ## Setup
 
 1. **Clone** this repository.
-2. **Create `secrets.h`** alongside the `.ino` (already present in this repo, but never commit real credentials):
+2. **Create `secrets.h`** ***(NEVER COMMIT THIS FILE)*** alongside the `.ino` with the following content, filling in your Wi-Fi and MQTT credentials:
    ```cpp
    #define SECRET_SSID        "your-wifi-ssid"
    #define SECRET_PASS        "your-wifi-password"
@@ -53,7 +53,7 @@ All dependencies are installed via the Arduino IDE Library Manager or `arduino-c
 | Long-press (≥ 2 s) | Clears all BLE bonds and reboots. Use this if the host's pairing record and the ESP32's bond record have diverged (e.g., you removed the device from the host but the bond is still on the ESP32). |
 | MQTT publish `WAKE` to `jupiter/power` | Same effect as a short button press. |
 
-The MQTT topic (`jupiter/power`) is hardcoded; rename it inside the `.ino` (`mqttClient.subscribe(...)` in `mqtt_reconnect()` and the comparison in `mqtt_callback()`) if you want a different topic. The expected payload is the literal text `WAKE` — no JSON.
+*The MQTT topic (`jupiter/power`) is hardcoded; rename it inside the `.ino` (`mqttClient.subscribe(...)` in `mqtt_reconnect()` and the comparison in `mqtt_callback()`) if you want a different topic. The expected payload is the literal text `WAKE` — no JSON.*
 
 ### Why MQTT?
 
