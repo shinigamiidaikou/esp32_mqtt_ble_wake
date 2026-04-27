@@ -21,11 +21,8 @@
 // considerations, and support for multiple wake keys or hosts for extra
 // features.
 //
-// Developed with iterative AI assistance (Anthropic Claude Opus 4.7) for the
-// BLE HID architecture, NimBLE integration, and documentation. Final code
-// review and integration by the author.
-//
 // ---------------------------------------------------------------------------
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 Shafin Ahmed
 //
 // This program is free software: you can redistribute it and/or modify it

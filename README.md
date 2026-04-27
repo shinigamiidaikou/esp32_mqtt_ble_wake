@@ -1,6 +1,6 @@
 # ESP32 MQTT BLE HID Waker
 
-ESP32 firmware that impersonates a BLE HID keyboard so it can wake a sleeping host on demand — triggered by a physical button or by an MQTT `WAKE` command. Built primarily for waking a Steam Deck (CachyOS / KDE) from sleep without needing a real Bluetooth keyboard nearby, but works with any host that supports BT HID wake-up.
+ESP32 firmware that impersonates a BLE HID keyboard so it can wake a sleeping host on demand — triggered by a physical button or by an MQTT `WAKE` command. Designed as a workaround for machines that can't do **wake-on-LAN**: Wi-Fi-only hosts where WoL is unreliable, devices with WoL disabled in BIOS/firmware, or any host you only reach over a VPN or remote-access tunnel where WoL's layer-2 magic packets can't traverse. Works with any host that supports Bluetooth HID wake.
 
 ## How it works
 
@@ -55,13 +55,17 @@ All dependencies are installed via the Arduino IDE Library Manager or `arduino-c
 
 The MQTT topic (`jupiter/power`) is hardcoded; rename it inside the `.ino` (`mqttClient.subscribe(...)` in `mqtt_reconnect()` and the comparison in `mqtt_callback()`) if you want a different topic. The expected payload is the literal text `WAKE` — no JSON.
 
-Here, MQTT is applied as a remote trigger from a phone or another computer, but you could integrate it with any home automation system that can publish to MQTT. Just be mindful of the security implications of exposing a wake trigger over the network — ensure your MQTT broker is secured and consider using a more obscure topic name.
+### Why MQTT?
+
+The MQTT path is the remote-wake half of this project — it's what fills the gap WoL can't cover. WoL magic packets are layer-2 broadcasts confined to the local subnet, so they don't cross routed networks, VPNs, or remote-access tunnels. An MQTT publish does. As long as the ESP32 has Wi-Fi and can reach a broker, a single message from anywhere that can also reach the broker (your phone on cellular, a laptop on another network, a remote-access tunnel into your home network, a home-automation system, etc.) is enough to wake the paired host.
+
+Secure your broker — TLS and credentials are already required by the sketch — and consider a non-obvious topic name to discourage casual or accidental triggers.
 
 ## Host-side setup
 
 Pairing alone is not enough — the host's Bluetooth controller has to be told it's allowed to be woken by this specific device.
 
-### Linux / BlueZ (e.g., CachyOS, Steam Deck)
+### Linux / BlueZ
 
 After pairing, run:
 ```bash
