@@ -5,8 +5,10 @@ ESP32 firmware that impersonates a BLE HID keyboard so it can wake a sleeping ho
 ## How it works
 
 1. The device boots silent — Wi-Fi + MQTT come up, BLE stack initializes, no advertising.
-2. A short button press or an MQTT message of `WAKE` on the configured topic kicks off a 2-minute fast-advertising window and latches a "wake intent" flag.
-3. If a bonded host connects during that window, the firmware waits ~500 ms for link-layer encryption to settle and then sends a single space keypress over BLE HID. That input is what actually wakes the host (most BT controllers wake the CPU on a connection from a bonded HID, the keypress confirms it across chipsets).
+2. A short button press or an MQTT message of `WAKE` on the configured topic acts as a wake trigger. What happens next depends on the BLE link state:
+   - **If the host is currently connected**, the firmware sends a single space keypress over BLE HID immediately — handy for waking the screen / dismissing a lockscreen while the link is up.
+   - **If the host is disconnected** (typically because it's asleep), the firmware kicks off a 2-minute fast-advertising window and latches a "wake intent" flag.
+3. If the host connects during that advertising window, the firmware waits ~500 ms for link-layer encryption to settle and then sends the space keypress. That input is what actually wakes the host (most BT controllers wake the CPU on a connection from a bonded HID, the keypress confirms it across chipsets).
 4. On disconnect, the radio goes silent again — no auto re-advertising. This avoids unintended wakes from bonded hosts that might re-establish a link on their own.
 5. A long press (2 s) wipes all BLE bonds and reboots, which is how you recover from a pairing mismatch.
 
@@ -49,7 +51,7 @@ All dependencies are installed via the Arduino IDE Library Manager or `arduino-c
 
 | Action | Result |
 | --- | --- |
-| Short-press the button | Starts a 2-minute fast advertising window. If a bonded host connects during the window, sends a space keypress to wake it. Pressing again during an active window resets the 2-minute timer. |
+| Short-press the button | If the host is already connected, sends a space keypress immediately. If disconnected, starts a 2-minute fast advertising window and queues the keypress to fire ~500 ms after the host connects. Pressing again during an active window resets the 2-minute timer. |
 | Long-press (≥ 2 s) | Clears all BLE bonds and reboots. Use this if the host's pairing record and the ESP32's bond record have diverged (e.g., you removed the device from the host but the bond is still on the ESP32). |
 | MQTT publish `WAKE` to `jupiter/power` | Same effect as a short button press. |
 

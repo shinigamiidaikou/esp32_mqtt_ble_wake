@@ -129,7 +129,8 @@ WakerServerCallbacks bleCallbacks;
 
 void start_advertising_window() {
   if (bleLinkUp) {
-    Serial.println("-> BLE already connected; host is awake. No-op.");
+    Serial.println("-> BLE already connected; sending wake keypress directly.");
+    send_wake_keypress();
     return;
   }
 
