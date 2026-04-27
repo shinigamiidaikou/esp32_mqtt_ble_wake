@@ -1,5 +1,7 @@
 # ESP32 MQTT BLE HID Waker
-
+<p align="center">
+<img width="750" height="500" alt="PXL_20260427_170959886 PORTRAIT" src="https://github.com/user-attachments/assets/97a0e48a-ff85-4291-9469-ab703a08a517" />
+</p>
 ESP32 firmware that impersonates a BLE HID keyboard so it can wake a sleeping host on demand — triggered by a physical button or by an MQTT `WAKE` command. Designed as a workaround for machines that can't do **wake-on-LAN**: Wi-Fi-only hosts where WoL is unreliable, devices with WoL disabled in BIOS/firmware, or any host you only reach over a VPN or remote-access tunnel where WoL's layer-2 magic packets can't traverse. Works with any host that supports Bluetooth HID wake.
 
 ## How it works
